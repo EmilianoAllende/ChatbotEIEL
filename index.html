@@ -1,4 +1,4 @@
-+<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,10 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
+            /* Fondo con imagen y superposición oscura para contraste y sobriedad */
+            background: url('canarias_oldImage.png') center/cover no-repeat fixed;
+            /* Color de respaldo si la imagen no carga */
+            background-color: #0b1d2a;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,15 +20,19 @@
         .chat-container {
             width: 500px;
             max-width: 90%;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
         .chat-header {
-            background-color: #007bff;
+            background: rgba(5, 39, 72, 0.75);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             padding: 15px;
             text-align: center;
@@ -51,16 +58,16 @@
             align-items: flex-start;
         }
         .user-message .content {
-            background-color: #dcf8c6;
-            color: #333;
+            background-color: rgba(13, 110, 253, 0.16);
+            color: #0f172a;
             padding: 10px 15px;
             border-radius: 20px;
             display: inline-block;
             max-width: 80%;
         }
         .bot-message .content {
-            background-color: #e9ecef;
-            color: #333;
+            background-color: rgba(255, 255, 255, 0.70);
+            color: #0f172a;
             padding: 10px 15px;
             border-radius: 20px;
             display: inline-block;
@@ -69,8 +76,8 @@
         }
         .municipio-selector-container {
             padding: 15px;
-            border-bottom: 1px solid #eee;
-            background-color: #f8f9fa;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+            background-color: rgba(255, 255, 255, 0.50);
         }
         .municipio-selector-container label {
             display: block;
@@ -89,7 +96,7 @@
         .chat-input {
             padding: 15px;
             display: flex;
-            border-top: 1px solid #eee;
+            border-top: 1px solid rgba(255, 255, 255, 0.35);
         }
         .chat-input input {
             flex-grow: 1;
@@ -100,7 +107,7 @@
             outline: none;
         }
         .chat-input button {
-            background-color: #007bff;
+            background-color: #0b5fa4;
             color: white;
             border: none;
             border-radius: 20px;
@@ -110,11 +117,6 @@
             font-size: 1em;
         }
 
-        /* --- ESTILOS PARA EL INDICADOR DE "PENSANDO" --- */
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-        }
         .typing-indicator span {
             height: 8px;
             width: 8px;
@@ -243,11 +245,25 @@
                     }),
                 });
 
+                // Leemos el cuerpo como texto para manejar JSON, texto plano o vacío sin errores
+                const raw = await response.text();
+                let parsed = null;
+                try {
+                    parsed = raw ? JSON.parse(raw) : null;
+                } catch (e) {
+                    // Si no es JSON válido, seguimos con raw como texto
+                }
+
                 // --- ELIMINAMOS EL INDICADOR ANTES DE MOSTRAR LA RESPUESTA ---
                 removeTypingIndicator();
-                
-                const data = await response.json();
-                addMessage(data.respuesta, 'bot');
+
+                // Preferimos 'respuesta'; si no, 'message' o 'error'; si no, texto crudo; si no, fallback
+                const fallbackMsg = 'Lo siento, ha ocurrido un error. Inténtalo de nuevo más tarde.';
+                const fromJson = parsed && (parsed.respuesta || parsed.message || parsed.error);
+                const fromText = raw && raw.trim() ? raw.trim() : null;
+
+                const botText = fromJson || fromText || fallbackMsg;
+                addMessage(botText, 'bot');
 
             } catch (error) {
                 // --- SI HAY UN ERROR, TAMBIÉN ELIMINAMOS EL INDICADOR ---
