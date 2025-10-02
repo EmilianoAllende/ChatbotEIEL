@@ -7,19 +7,22 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            /* Fondo con imagen y superposición oscura para contraste y sobriedad */
-            background: url('gran_canaria.png') center/cover no-repeat fixed;
+            /* Fondo con imagen alineada a la izquierda y centrada verticalmente */
+            background: url('gran_canaria.png') left center/cover no-repeat fixed;
             /* Color de respaldo si la imagen no carga */
             background-color: #0b1d2a;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end; /* Alinea el contenido del body a la derecha */
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .chat-container {
             width: 500px;
             max-width: 90%;
+            height: 75vh; /* 75% del alto de la ventana */
             background-color: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(2px);
             -webkit-backdrop-filter: blur(2px);
@@ -29,6 +32,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            margin-right: 5%; /* Espacio desde el borde derecho */
         }
         .chat-header {
             background: rgba(5, 39, 72, 0.75);
